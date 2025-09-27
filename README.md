@@ -1,56 +1,89 @@
-# Blog App  
+# Blog App
 
-A simple and responsive **React-based Blog Application** where users can view and manage blog posts. Built with **React, Vite, Node.js, and MongoDB**.  
+A simple and responsive **React-based Blog Application** where users can view and manage blog posts. Built with **React, Vite, Node.js, Firebase, and MongoDB**.
+
+---
+
+## Team Details
+
+* **Harsh Gondaliya** | Enroll: D24DCS176
+* **Meet Koriya** | Enroll: D24DCS175
 
 ---
 
 ## Features
-- View all blog posts with pagination  
-- Create, edit, and delete blog posts  
-- Responsive UI for mobile & desktop  
-- REST API integration with backend  
-- Fast development powered by Vite  
+
+* View all blog posts with pagination
+* Create, edit, and delete blog posts
+* User authentication (Register/Login/Signout)
+* Google OAuth integration
+* Password reset functionality
+* View comments of users
+* Responsive UI for mobile & desktop
+* REST API integration with backend
+* Fast development powered by Vite
 
 ---
 
 ## Tech Stack
-- **Frontend:** React, Vite, TailwindCSS  
-- **Backend:** Node.js + Express + firebase
-- **Database:** MongoDB (Mongoose)  
-- **Version Control:** Git & GitHub  
+
+* **Frontend:** React, Vite, TailwindCSS
+* **Backend:** Node.js + Express + Firebase
+* **Database:** MongoDB (Mongoose)
+* **Version Control:** Git & GitHub
 
 ---
 
 ## Installation & Setup
 
-### 1️Clone the repository
+### 1️ Clone the repository
+
 ```bash
 git clone https://github.com/harsh4514a/Blog_App.git
 cd Blog_App
 ```
 
 ### 2️ Install dependencies
+
 ```bash
 npm install
 ```
 
 ### 3️ Start development server
+
 ```bash
 npm run dev
 ```
-Your app will run at: **http://localhost:5173/**  
+
+Your app will run at: **[http://localhost:5173/](http://localhost:5173/)**
 
 ---
 
 ## API Endpoints (Backend Integration)
-- `GET /api/blog/get-all-blogs?limit=9` → Fetch all blogs (paginated)  
-- `POST /api/blog/create` → Create new blog post  
-- `PUT /api/blog/update/:id` → Update blog post  
-- `DELETE /api/blog/delete/:id` → Delete blog post  
+
+### Blog Routes
+
+* `GET /api/blog/get-all-blogs?limit=9` → Fetch all blogs (paginated)
+* `POST /api/blog/create` → Create new blog post
+* `PUT /api/blog/update/:id` → Update blog post
+* `DELETE /api/blog/delete/:id` → Delete blog post
+
+### User Routes
+
+* `POST /api/user/register` → Register new user
+* `POST /api/user/login` → Login user
+* `PUT /api/user/updateuser/:id` → Update user (requires authentication)
+* `POST /api/user/googleuser` → Google OAuth login
+* `DELETE /api/user/deleteuser/:id` → Delete user (requires authentication)
+* `POST /api/user/signoutuser` → Sign out user
+* `GET /api/user/getusers` → Get all users (requires authentication)
+* `POST /api/user/reset-password` → Reset user password
+* `GET /api/user/get-user-comment/:commentUserId` → Get comments by user
 
 ---
 
 ## Project Structure
+
 ```
 Blog_App/
  ┣ src/

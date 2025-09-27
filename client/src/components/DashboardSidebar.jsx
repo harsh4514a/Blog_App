@@ -79,6 +79,10 @@ const DashboardSidebar = () => {
                     </div>
                 </NavLink>
 
+                <NavLink to={'?tab=my-posts'} className={`flex  items-center justify-center gap-1 cursor-pointer transition-all ${tab === 'my-posts' && 'bg-zinc-600 mx-3 text-white rounded-md py-1 '}`} >
+                    <span><MdPostAdd size={25} /></span>
+                    <p>My Posts</p>
+                </NavLink>
 
                 {/* Conditionally rendering for admin access only   */}
                 {

@@ -43,9 +43,14 @@ const Dashboard = () => {
                     {tab === 'profile' && <DashboardProfile />}
                 </div>
 
+                {/* My Posts */}
+                <div className={`${tab === 'my-posts' && 'flex w-full'}`}>
+                    {tab === 'my-posts' && <AllBlogs isAdmin={false} />}
+                </div>
+
                 {/* All blog  */}
                 <div className={`${tab === 'blogs' && 'flex w-full'}`}>
-                    {tab === 'blogs' && <AllBlogs />}
+                    {tab === 'blogs' && <AllBlogs isAdmin={true} />}
                 </div>
 
                 {/* All users   */}

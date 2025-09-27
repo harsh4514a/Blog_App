@@ -71,17 +71,28 @@ export const getUser = asyncHandler(async (req, res, next) => {
 export const registerUser = asyncHandler(async (req, res, next) => {
     const { username, email, password } = req.body;
 
+    // Explicit validation
+    if (!username || !username.trim()) {
+        return next(errorHandler("Username is required", 400));
+    }
+    if (!email || !email.trim() || !email.includes('@')) {
+        return next(errorHandler("Valid email is required", 400));
+    }
+    if (!password || password.length < 6) {
+        return next(errorHandler("Password must be at least 6 characters", 400));
+    }
+
     const userExist = await userModel.findOne({ email: email });
 
     const genSalt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, genSalt);
 
     if (userExist) {
-        return next(errorHandler("User is already exist!", 400));
+        return next(errorHandler("User already exists with this email", 400));
     } else {
         const registerUserInfo = await new userModel({
-            username,
-            email,
+            username: username.trim(),
+            email: email.trim().toLowerCase(),
             password: hashedPassword,
         });
         try {
@@ -196,6 +207,7 @@ export const googleOAuth = asyncHandler(async (req, res, next) => {
     const user = await userModel.findOne({ email: email });
 
     if (user) {
+        const { password, ...rest } = user._doc;
         const createToken = JWT.sign({ id: user._id }, process.env.JWT_TOKEN, {
             expiresIn: "30d",
         });
@@ -205,7 +217,7 @@ export const googleOAuth = asyncHandler(async (req, res, next) => {
             .json({
                 success: true,
                 message: "User has been successfully loggedIn",
-                user: user,
+                user: rest,
             });
     } else {
         const generatePassword =
@@ -215,12 +227,13 @@ export const googleOAuth = asyncHandler(async (req, res, next) => {
         try {
             const genSalt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(generatePassword, genSalt);
-            const modifiedName = username.toLowerCase().replace(/\s/g, "");
+            const safeUsername = username ? username.toLowerCase().replace(/\s/g, "") : email.split('@')[0];
+            const safeProfilePicture = profilePicture || '';
 
             const loginGoogleUser = new userModel({
-                username: modifiedName,
+                username: safeUsername,
                 email: email,
-                profilePicture: profilePicture,
+                profilePicture: safeProfilePicture,
                 password: hashedPassword,
             });
             await loginGoogleUser.save();

@@ -21,12 +21,6 @@ const AllComments = () => {
 
 
 
-
-
-
-
-
-
     // Fetch Comments :
     useEffect(() => {
         if (user.isAdmin) {

@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
-import About from './pages/About';
 import Contact from './pages/Contact';
 import Register from './pages/Register';
 import Login from './pages/Login';
@@ -36,7 +35,7 @@ const App = () => {
                             <Header />
                             <Routes>
                                 <Route path='/' element={<Home />} />
-                                <Route path='/about' element={<About />} />
+                               
                                 <Route path='/contact' element={<Contact />} />
                                 <Route path='/register' element={<Register />} />
                                 <Route path='/login' element={<Login />} />
@@ -45,11 +44,11 @@ const App = () => {
                                 <Route path='/forget-password' element={<ForgetPassword />} />
                                 <Route element={<PrivateRoute />}>
                                     <Route path='/dashboard' element={<Dashboard />} />
+                                    <Route path='/create-blog' element={<CreateBlog />} />
+                                    <Route path='/update-blog/:blogId' element={<UpdateBlog />} />
                                 </Route>
 
                                 <Route element={<AdminPrivateRoute />}>
-                                    <Route path='/create-blog' element={<CreateBlog />} />
-                                    <Route path='/update-blog/:blogId' element={<UpdateBlog />} />
                                 </Route>
 
                             </Routes>

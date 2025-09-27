@@ -58,7 +58,7 @@ export const getAllBlogs = asyncHandler(async (req, res, next) => {
             blogs
         })
     } catch (error) {
-        return next(errorHandler(error.message), 400);
+        return next(errorHandler(error.message, 500));
     }
 });
 
@@ -72,8 +72,8 @@ export const postBlog = asyncHandler(async (req, res, next) => {
     const { blogTitle, blogCategory, blogImgFile, blogBody, user } = req.body
 
 
-    if (!user.isAdmin) {
-        return next(errorHandler('You can not create blog,Unauthorized user!', 401));
+    if (!user) {
+        return next(errorHandler('You are not authorized to create blog!', 401));
     }
 
     const slug = req.body.blogTitle.trim().toLowerCase().replace(/\s+/g, '-')
@@ -95,7 +95,7 @@ export const postBlog = asyncHandler(async (req, res, next) => {
             blog: addBlogPost
         })
     } catch (error) {
-        next(errorHandler(error));
+        next(errorHandler(error.message, 500));
     }
 })
 
@@ -118,7 +118,7 @@ export const deleteBlog = asyncHandler(async (req, res, next) => {
                 message: 'Blog has been deleted'
             })
         } catch (error) {
-            next('An error occurred while deleting the blog!', 400);
+            next(errorHandler('An error occurred while deleting the blog!', 400));
         }
     } else {
         return next('You are not allowed to delete the blog', 401);

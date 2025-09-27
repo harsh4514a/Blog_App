@@ -12,11 +12,6 @@ import { useNavigate } from 'react-router-dom';
 
 
 
-
-
-
-
-
 const CreateBlog = () => {
 
     const { user } = useSelector((state) => state.userSliceApp);
@@ -57,9 +52,9 @@ const CreateBlog = () => {
             return false;
         }
 
-        const uniqueImageId = `image_ ${Date.now().toString()}`
+        const uniqueImageId = `image_${Date.now().toString()}`
 
-        const imageRef = ref(firebaseStorage, `blogImages/${uniqueImageId}`, blogImage);
+        const imageRef = ref(firebaseStorage, `blogImages/${uniqueImageId}`);
 
         try {
             setImageLoader(true);
@@ -79,6 +74,7 @@ const CreateBlog = () => {
         } catch (error) {
             setImageLoader(false);
             console.log('Could not upload image');
+            toast.error('Image upload failed');
         }
     }
 
@@ -114,6 +110,12 @@ const CreateBlog = () => {
         if (!formInfo.blogTitle) {
             toast.error('Blog title is required!');
             return false
+        }
+
+        // Category validation:
+        if (!formData.blogCategory || formData.blogCategory === 'Select Category') {
+            toast.error('Please select a valid category!');
+            return false;
         }
 
         // Post body validation : 

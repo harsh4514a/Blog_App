@@ -96,16 +96,16 @@ export const deleteComment = asyncHandler(async (req, res, next) => {
     const { isAdmin } = req.body.user;
 
     try {
-        const findComment = await commentModel.find({ _id: commentId });
+        const findComment = await commentModel.findById(commentId);
 
-        if (findComment.length === 0) {
+        if (!findComment) {
             return next(errorHandler('Comment not found!', 404));
         }
-        if (findComment.userId !== id && !isAdmin) {
+        if (findComment.userId.toString() !== id.toString() && !isAdmin) {
             return next(errorHandler('You are not authorized to delete!', 401));
         }
 
-        await commentModel.findByIdAndDelete(findComment);
+        await commentModel.findByIdAndDelete(commentId);
 
         return res.status(200).json({
             success: true,

@@ -7,9 +7,10 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://localhost:8000',
-        secure: false
+        secure: false,
       }
-    }
+    },
+    host:true
   },
   plugins: [react()]
 })

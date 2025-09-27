@@ -117,16 +117,16 @@ const Header = () => {
                                 duration: 1,
                                 delay: 0
                             }}
-                        >Draft</motion.h1>
+                        >Blog</motion.h1>
                         <motion.h1 className='text-xl font-bold px-2  text-white rounded-md bg-gradient-to-r from-blue-400 via-blue-500 to-blue-000 '
-                        >code</motion.h1>
+                        >App</motion.h1>
                     </NavLink>
 
                     <div className="flex gap-5 font-semibold">
 
 
 
-                        <div className="flex gap-1 text-sm items-center">
+                        {/* <div className="flex gap-1 text-sm items-center">
                             <span><CgUserlane size={20} className={`${location.pathname === '/about' && 'text-blue-00'}`} /></span>
                             <NavLink className={` ${location.pathname === '/about' && 'border-b-2 border-blue-600 text-blue-400'}`} to={'/about'}>
                                 <motion.p
@@ -138,7 +138,20 @@ const Header = () => {
                                     }}>About
                                 </motion.p>
                             </NavLink>
-                        </div>
+                        </div> */}
+
+                        {user && (
+                            <NavLink className={` ${location.pathname === '/create-blog' && 'border-b-2 border-blue-600 text-blue-400'}`} to={'/create-blog'}>
+                                <motion.p
+                                    initial={{ y1: 1000 }}
+                                    animate={{ y: [-20, 0] }}
+                                    transition={{
+                                        duration: 1,
+                                        delay: 0
+                                    }}>Create Post
+                                </motion.p>
+                            </NavLink>
+                        )}
                     </div>
 
                     <div className="flex items-center relative">
@@ -186,6 +199,16 @@ const Header = () => {
 
                                         <hr />
 
+                                        <div className="flex items-center justify-center">
+                                            {user && user.isAdmin ? (
+                                                <NavLink to={'/dashboard?tab=blogs'} className={` transition-all py-2 px-3 rounded-md text-sm font-semibold hover:${theme === 'dark' ? 'bg-gray-600  text-white' : 'bg-gray-300 text-black'}`}>Manage All Posts</NavLink>
+                                            ) : (
+                                                <NavLink to={'/dashboard?tab=my-posts'} className={` transition-all py-2 px-3 rounded-md text-sm font-semibold hover:${theme === 'dark' ? 'bg-gray-600  text-white' : 'bg-gray-300 text-black'}`}>My Posts</NavLink>
+                                            )}
+                                        </div>
+
+                                        <hr />
+
                                         <div className="flex  justify-center items-center">
                                             <PiSignOutDuotone size={20} />
                                             <button className={`transition-all px-5 rounded-md py-2 text-sm font-semibold hover:${theme === 'dark' ? 'bg-gray-600  text-white' : 'bg-gray-300 text-black'}`} onClick={() => signOutHandle()}>SignOut</button>
@@ -200,7 +223,7 @@ const Header = () => {
                             <div className="">
                                 {location.pathname === `/login` || location.pathname === `/register` ? <></> :
                                     <NavLink to={'/login'} className='active:scale-95 transition-all flex items-center gap-1 bg-blue-600 font-semibold rounded-md px-2 py-2 text-white hover:bg-blue-700 active:bg-blue-800'>
-                                        <span>Get started</span>
+                                        <span>Register/Login</span>
                                         <span><MdOutlineKeyboardDoubleArrowRight size={20} /></span>
                                     </NavLink>
                                 }
@@ -254,19 +277,29 @@ const Header = () => {
 
 
 
-                                    <div className={`flex gap-2 py-2 items-center transition-all  px-2 rounded-md ${theme === 'dark' ? 'hover:bg-gray-600' : 'hover:bg-gray-400 hover:text-white'}`}>
+                                <div className={`flex gap-2 py-2 items-center transition-all  px-2 rounded-md ${theme === 'dark' ? 'hover:bg-gray-600' : 'hover:bg-gray-400 hover:text-white'}`}>
 
-                                        <CgProfile size={20} />
+                                    <CgProfile size={20} />
 
-                                        <NavLink className={`transition-all `} to={'/dashboard?tab=profile'}>Profile</NavLink>
-                                    </div>
+                                    <NavLink className={`transition-all `} to={'/dashboard?tab=profile'}>Profile</NavLink>
+                                </div>
 
-                                    <hr />
+                                <hr />
 
-                                    <div className={`flex gap-2 py-2 px-2 items-center transition-all rounded-md ${theme === 'dark' ? 'hover:bg-gray-600' : 'hover:bg-gray-400 hover:text-white'}`}>
-                                        <PiSignOutDuotone size={20} />
-                                        <button className='text-sm transition-all ' onClick={() => signOutHandle()}>SignOut</button>
-                                    </div>
+                                <div className={`flex gap-2 py-2 px-2 items-center transition-all rounded-md ${theme === 'dark' ? 'hover:bg-gray-600' : 'hover:bg-gray-400 hover:text-white'}`}>
+                                    {user && user.isAdmin ? (
+                                        <NavLink className={`transition-all `} to={'/dashboard?tab=blogs'}>Manage All Posts</NavLink>
+                                    ) : (
+                                        <NavLink className={`transition-all `} to={'/dashboard?tab=my-posts'}>My Posts</NavLink>
+                                    )}
+                                </div>
+
+                                <hr />
+
+                                <div className={`flex gap-2 py-2 px-2 items-center transition-all rounded-md ${theme === 'dark' ? 'hover:bg-gray-600' : 'hover:bg-gray-400 hover:text-white'}`}>
+                                    <PiSignOutDuotone size={20} />
+                                    <button className='text-sm transition-all ' onClick={() => signOutHandle()}>SignOut</button>
+                                </div>
 
 
                                 </div>
@@ -302,7 +335,7 @@ const Header = () => {
                             <div className="flex items-center justify-center" onClick={() => setToggleNavBtn(!toggleNavBtn)}>
                                 {location.pathname === `/login` || location.pathname === `/register` ? <></> :
                                     <NavLink to={'/login'} className='active:scale-95 transition-all flex items-center gap-1 bg-blue-600 font-semibold rounded-md px-2 py-2 text-white hover:bg-blue-700 active:bg-blue-800'>
-                                        <span>Get started</span>
+                                        <span>Register/Login</span>
                                         <span><MdOutlineKeyboardDoubleArrowRight size={20} /></span>
                                     </NavLink>
                                 }

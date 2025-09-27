@@ -34,24 +34,53 @@ A simple and responsive **React-based Blog Application** where users can view an
 
 ---
 
+## Prerequisites
+
+Make sure you have the following installed:
+
+* Node.js
+* MongoDB
+
+---
+
 ## Installation & Setup
 
-### 1️ Clone the repository
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/harsh4514a/Blog_App.git
 cd Blog_App
 ```
 
-### 2️ Install dependencies
+### 2. Install dependencies
+
+#### Backend
 
 ```bash
+cd ./server
 npm install
 ```
 
-### 3️ Start development server
+#### Frontend
 
 ```bash
+cd ./client
+npm install
+```
+
+### 3. Run the application
+
+#### Start the backend server
+
+```bash
+cd ./server
+npm run dev
+```
+
+#### Start the frontend development server
+
+```bash
+cd ./client
 npm run dev
 ```
 

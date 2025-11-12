@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { firebaseStorage } from '../firebase/firebaseConfig';
-import FirebaseLoader from '../assests/firebaseLoader/FirebaseLoader';
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { updateBlogStart, updateBlogFailure, updateBlogSuccess } from '../features/blogSlice';
+import BACKEND_URL from "../config/apiConfig";
+// const BACKEND_URL = 'http://localhost:8000';
 
 
 
@@ -28,8 +27,7 @@ const UpdateBlog = () => {
     const { theme } = useSelector((state) => state.themeSliceApp);
 
     const [blogImage, setBlogImage] = useState(null);
-    const [firebaseBlogImgUrl, setFirebaseBlogImgUrl] = useState(null);
-    const [imageLoader, setImageLoader] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState(null);
 
     const [formData, setFormData] = useState({});
 
@@ -43,39 +41,12 @@ const UpdateBlog = () => {
     const blogImgChangeHandle = (e) => {
         const file = e.target.files[0];
         setBlogImage(file);
+        if (file) {
+            setPreviewUrl(URL.createObjectURL(file));
+        } else {
+            setPreviewUrl(null);
+        }
     };
-
-    const firebaseUploadImg = async () => {
-
-        if (!blogImage) {
-            toast.error('Select an image !');
-            return false;
-        }
-
-        const uniqueImageId = `image_ ${Date.now().toString()}`
-
-        const imageRef = ref(firebaseStorage, `blogImages/${uniqueImageId}`, blogImage);
-
-        try {
-            setImageLoader(true);
-
-            const upload = await uploadBytes(imageRef, blogImage);
-
-            const blogImgUrl = await getDownloadURL(upload.ref);
-            setImageLoader(false)
-
-            setFirebaseBlogImgUrl(blogImgUrl);
-            setFormData({
-                ...formData, blogImgFile: blogImgUrl
-            })
-
-            toast.success('Image uploaded successfully');
-
-        } catch (error) {
-            setImageLoader(false);
-            console.log('Could not upload image');
-        }
-    }
 
 
     const inputChangeHandle = (e) => {
@@ -124,7 +95,7 @@ const UpdateBlog = () => {
 
 
 
-    // Form Validation : 
+    // Form Validation :
     const validateForm = async (formInfo) => {
 
         if (!formInfo.blogTitle) {
@@ -141,22 +112,35 @@ const UpdateBlog = () => {
             // PUT req for updating the blog :
             try {
                 dispatch(updateBlogStart());
-                const updateBlog = await axios.put(`/api/blog/update-blog/${blogId}/${user._id}`, formData, {
+                const formDataToSend = new FormData();
+                formDataToSend.append('blogTitle', formData.blogTitle);
+                formDataToSend.append('blogCategory', formData.blogCategory);
+                formDataToSend.append('blogBody', formData.blogBody);
+                formDataToSend.append('user', JSON.stringify(user));
+                if (blogImage) {
+                    formDataToSend.append('blogImgFile', blogImage);
+                } else {
+                    formDataToSend.append('blogImgFile', formData.blogImgFile);
+                }
+
+                const updateBlog = await axios.put(`/api/blog/update-blog/${blogId}/${user._id}`, formDataToSend, {
                     headers: {
                         Authorization: user.token,
+                        'Content-Type': 'multipart/form-data',
                     },
                 })
                 if (updateBlog.status === 200) {
 
                     const response = updateBlog.data.blog
                     dispatch(updateBlogSuccess(response));
-                    toast.success(response.message);
+                    toast.success('Blog updated successfully!');
                     navigate(`/blog/${response.slug}`);
 
                 }
             } catch (error) {
                 dispatch(updateBlogFailure(error.message));
                 console.error(error.message);
+                toast.error('Failed to update blog');
             }
         }
     }
@@ -175,37 +159,27 @@ const UpdateBlog = () => {
 
                         <select defaultValue={'Select category'} className={` outline-none py-2 rounded-md px-5 border ${theme === 'dark' && 'bg-gray-700 border border-gray-500'}`} required name='blogCategory' onChange={inputChangeHandle} value={formData && formData.blogCategory}>
                             <option disabled >Select Category</option>
-                            <option>Java</option>
-                            <option>Javascript</option>
-                            <option>React Js</option>
-                            <option>Git</option>
-                            <option>Mongo DB</option>
+                            <option>Technology & Innovation</option>
+                            <option>Programming & Development</option>
+                            <option>Artificial Intelligence & Machine Learning</option>
+                            <option>Career & Personal Growth</option>
+                            <option>Education & Learning Resources</option>
+                            <option>Data Science & Analytics</option>
+                            <option>Cybersecurity & Privacy</option>
+                            <option>Web Design & UI/UX</option>
+                            <option>Startups & Entrepreneurship</option>
+                            <option>Tech Reviews & Product Insights</option>
                         </select>
 
                     </div>
                     <div className="flex items-center border-2 border-dotted py-2 px-3 border-violet-500 ">
-
-
-
                         <input type="file" accept='image/*' onChange={blogImgChangeHandle} />
-
-                        {
-                            imageLoader ?
-                                <div className="border-4 px-3 py-1 font-bold animate-pulse border-violet-500 rounded-md">
-                                    <FirebaseLoader />
-                                </div>
-                                :
-                                <button disabled={imageLoader} type='button' className={`text-xs py-2 bg-gray-700 border-violet-500 border-2 text-white rounded-md px-4 ${imageLoader ? 'cursor-not-allowed' : 'cursor-pointer'}`} onClick={firebaseUploadImg}>Upload Image</button>
-                        }
-
-
                     </div>
 
                     <div className="w-full flex justify-center">
                         {
-                            formData && <img src={formData.blogImgFile || firebaseBlogImgUrl && firebaseBlogImgUrl} className='h-96 object-cover rounded-md w-full' />
+                            formData && <img src={previewUrl || `${BACKEND_URL}${formData.blogImgFile}`} className='h-96 object-cover rounded-md w-full' />
                         }
-
                     </div>
 
                     <div className="my-5">

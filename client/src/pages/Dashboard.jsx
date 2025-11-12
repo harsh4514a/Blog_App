@@ -34,31 +34,31 @@ const Dashboard = () => {
 
 
                 {/* DashTab */}
-                <div className={`${tab === 'dash' && 'flex w-full'}`}>
+                <div className={`${tab === 'dash' ? 'flex w-full' : 'hidden'}`}>
                     {tab === 'dash' && <DashBaordComp />}
                 </div>
 
                 {/* Profile */}
-                <div className={`${tab === 'profile' && 'flex justify-center w-full'}`}>
+                <div className={`${tab === 'profile' ? 'flex justify-center w-full' : 'hidden'}`}>
                     {tab === 'profile' && <DashboardProfile />}
                 </div>
 
                 {/* My Posts */}
-                <div className={`${tab === 'my-posts' && 'flex w-full'}`}>
+                <div className={`${tab === 'my-posts' ? 'flex w-full' : 'hidden'}`}>
                     {tab === 'my-posts' && <AllBlogs isAdmin={false} />}
                 </div>
 
                 {/* All blog  */}
-                <div className={`${tab === 'blogs' && 'flex w-full'}`}>
+                <div className={`${tab === 'blogs' ? 'flex w-full' : 'hidden'}`}>
                     {tab === 'blogs' && <AllBlogs isAdmin={true} />}
                 </div>
 
                 {/* All users   */}
-                <div className={`${tab === 'users' && 'flex w-full'}`}>
+                <div className={`${tab === 'users' ? 'flex w-full' : 'hidden'}`}>
                     {tab === 'users' && <AllUsers />}
                 </div>
 
-                <div className={`${tab === 'comments' && 'flex w-full'}`}>
+                <div className={`${tab === 'comments' ? 'flex w-full' : 'hidden'}`}>
                     {tab === 'comments' && <AllComments />}
                 </div>
             </div>

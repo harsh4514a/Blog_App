@@ -18,14 +18,16 @@ import commentRouter from './routes/commentRoute.js';
 
 
 
+
 const __dirname = path.resolve();
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: true,
   credentials: true
 }));
+app.use('/uploads', express.static('uploads'));
 app.use('/api/user', userRouter);
 app.use('/api/blog', blogRouter);
 app.use('/api/comment', commentRouter);

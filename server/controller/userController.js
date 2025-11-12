@@ -21,6 +21,9 @@ const transport = nodemailer.createTransport({
     }
 });
 
+// Default profile picture (same as in user model default)
+const DEFAULT_PROFILE_PICTURE = 'https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3485.jpg';
+
 // GET REQ  : Fetching User :
 export const getUser = asyncHandler(async (req, res, next) => {
     try {
@@ -53,6 +56,8 @@ export const getUser = asyncHandler(async (req, res, next) => {
 
         const userWithoutPassword = userInfo.map((user) => {
             const { password, ...rest } = user._doc;
+            // ensure profilePicture fallback
+            if (!rest.profilePicture) rest.profilePicture = DEFAULT_PROFILE_PICTURE;
             return rest;
         });
         return res.status(200).json({
@@ -98,6 +103,7 @@ export const registerUser = asyncHandler(async (req, res, next) => {
         try {
             await registerUserInfo.save();
             const { password, ...rest } = registerUserInfo._doc;
+            if (!rest.profilePicture) rest.profilePicture = DEFAULT_PROFILE_PICTURE;
             return res.status(200).json({
                 success: true,
                 message: "User has been registered successfully",
@@ -142,6 +148,7 @@ export const loginUser = asyncHandler(async (req, res, next) => {
 
     if (updateUser) {
         const { password, ...rest } = updateUser._doc;
+        if (!rest.profilePicture) rest.profilePicture = DEFAULT_PROFILE_PICTURE;
         return res
             .status(200)
             .cookie("accessToken", updateUser.token, { httpOnly: true, secure: true })
@@ -187,6 +194,7 @@ export const updateUser = asyncHandler(async (req, res, next) => {
             );
 
             const { password, ...rest } = updateUserInfo._doc;
+            if (!rest.profilePicture) rest.profilePicture = DEFAULT_PROFILE_PICTURE;
 
             return res.status(200).json({
                 message: "User has been updated",
@@ -208,6 +216,8 @@ export const googleOAuth = asyncHandler(async (req, res, next) => {
 
     if (user) {
         const { password, ...rest } = user._doc;
+        // fallback to default if profilePicture is empty or missing
+        if (!rest.profilePicture) rest.profilePicture = DEFAULT_PROFILE_PICTURE;
         const createToken = JWT.sign({ id: user._id }, process.env.JWT_TOKEN, {
             expiresIn: "30d",
         });
@@ -228,7 +238,7 @@ export const googleOAuth = asyncHandler(async (req, res, next) => {
             const genSalt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(generatePassword, genSalt);
             const safeUsername = username ? username.toLowerCase().replace(/\s/g, "") : email.split('@')[0];
-            const safeProfilePicture = profilePicture || '';
+            const safeProfilePicture = profilePicture || DEFAULT_PROFILE_PICTURE;
 
             const loginGoogleUser = new userModel({
                 username: safeUsername,
@@ -250,6 +260,7 @@ export const googleOAuth = asyncHandler(async (req, res, next) => {
             );
 
             const { password, ...rest } = updateUser._doc;
+            if (!rest.profilePicture) rest.profilePicture = DEFAULT_PROFILE_PICTURE;
 
             return res
                 .status(200)
@@ -350,6 +361,7 @@ export const getComment = asyncHandler(async (req, res, next) => {
             return next(errorHandler('Comment not found!', 404));
         }
         const { password, ...rest } = comment._doc;
+        if (!rest.profilePicture) rest.profilePicture = DEFAULT_PROFILE_PICTURE;
         return res.status(200).json(rest);
     } catch (error) {
         console.log(error);

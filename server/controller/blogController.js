@@ -65,18 +65,32 @@ export const getAllBlogs = asyncHandler(async (req, res, next) => {
 
 
 
-// Post Blog : POST API - 
+// Post Blog : POST API -
 
 export const postBlog = asyncHandler(async (req, res, next) => {
 
-    const { blogTitle, blogCategory, blogImgFile, blogBody, user } = req.body
+    let { blogTitle, blogCategory, blogBody, user } = req.body;
 
+    // Parse user if it's a string (from multipart/form-data)
+    if (typeof user === 'string') {
+        try {
+            user = JSON.parse(user);
+        } catch (err) {
+            return next(errorHandler('Invalid user data!', 400));
+        }
+    }
 
     if (!user) {
         return next(errorHandler('You are not authorized to create blog!', 401));
     }
 
-    const slug = req.body.blogTitle.trim().toLowerCase().replace(/\s+/g, '-')
+    if (!req.file) {
+        return next(errorHandler('Image file is required!', 400));
+    }
+
+    const blogImgFile = `/uploads/blogs/${req.file.filename}`;
+
+    const slug = blogTitle.trim().toLowerCase().replace(/\s+/g, '-')
 
     const addBlogPost = new blogModel({
         blogTitle: blogTitle,
@@ -95,6 +109,10 @@ export const postBlog = asyncHandler(async (req, res, next) => {
             blog: addBlogPost
         })
     } catch (error) {
+        // Handle duplicate key error for blogTitle
+        if (error.code === 11000 && error.keyPattern && error.keyPattern.blogTitle) {
+            return next(errorHandler('A blog with this title already exists. Please choose a different title.', 400));
+        }
         next(errorHandler(error.message, 500));
     }
 })
@@ -128,7 +146,7 @@ export const deleteBlog = asyncHandler(async (req, res, next) => {
 
 
 
-// Update blog : PUT API 
+// Update blog : PUT API
 
 export const updateBlog = asyncHandler(async (req, res, next) => {
 
@@ -136,13 +154,20 @@ export const updateBlog = asyncHandler(async (req, res, next) => {
     const blog = await blogModel.findById(req.params.blogid);
 
     if (user.isAdmin || blog.userId === req.params.userid) {
+        const updateData = {
+            blogTitle: req.body.blogTitle,
+            blogCategory: req.body.blogCategory,
+            blogBody: req.body.blogBody
+        };
+
+        if (req.file) {
+            updateData.blogImgFile = `/uploads/blogs/${req.file.filename}`;
+        } else if (req.body.blogImgFile) {
+            updateData.blogImgFile = req.body.blogImgFile;
+        }
+
         const updatedBlog = await blogModel.findByIdAndUpdate(blog, {
-            $set: {
-                blogTitle: req.body.blogTitle,
-                blogCategory: req.body.blogCategory,
-                blogImgFile: req.body.blogImgFile,
-                blogBody: req.body.blogBody
-            }
+            $set: updateData
         }, { new: true })
 
         return res.status(200).json({

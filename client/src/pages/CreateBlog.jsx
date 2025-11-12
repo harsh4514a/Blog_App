@@ -1,10 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { firebaseStorage } from '../firebase/firebaseConfig';
 import { addBlogStart, addBlogFailure, addBlogSuccess } from '../features/blogSlice';
-import FirebaseLoader from '../assests/firebaseLoader/FirebaseLoader';
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,13 +17,11 @@ const CreateBlog = () => {
     const dispatch = useDispatch();
 
     const [blogImage, setBlogImage] = useState(null);
-    const [firebaseBlogImgUrl, setFirebaseBlogImgUrl] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(null);
 
     const [formData, setFormData] = useState({
         user: user
     });
-
-    const [imageLoader, setImageLoader] = useState(false);
 
 
 
@@ -35,48 +30,12 @@ const CreateBlog = () => {
     const blogImgChangeHandle = (e) => {
         const file = e.target.files[0];
         setBlogImage(file);
+        if (file) {
+            setPreviewUrl(URL.createObjectURL(file));
+        } else {
+            setPreviewUrl(null);
+        }
     };
-
-
-    // Firebase Blog image upload : 
-
-
-    useEffect(() => {
-
-    }, [firebaseBlogImgUrl]);
-
-    const firebaseUploadImg = async () => {
-
-        if (!blogImage) {
-            toast.error('Select an image !');
-            return false;
-        }
-
-        const uniqueImageId = `image_${Date.now().toString()}`
-
-        const imageRef = ref(firebaseStorage, `blogImages/${uniqueImageId}`);
-
-        try {
-            setImageLoader(true);
-
-            const upload = await uploadBytes(imageRef, blogImage);
-
-            const blogImgUrl = await getDownloadURL(upload.ref);
-            setImageLoader(false)
-            toast.success('Image uploaded successfully');
-
-            setFirebaseBlogImgUrl(blogImgUrl);
-            setFormData({
-                ...formData, blogImgFile: blogImgUrl
-            })
-
-
-        } catch (error) {
-            setImageLoader(false);
-            console.log('Could not upload image');
-            toast.error('Image upload failed');
-        }
-    }
 
 
 
@@ -118,7 +77,13 @@ const CreateBlog = () => {
             return false;
         }
 
-        // Post body validation : 
+        // Image validation:
+        if (!blogImage) {
+            toast.error('Please select an image!');
+            return false;
+        }
+
+        // Post body validation :
         if (!formData.blogBody) {
             toast.error('Post body can not be empty!')
             return false;
@@ -130,20 +95,39 @@ const CreateBlog = () => {
             try {
 
                 dispatch(addBlogStart());
-                const addBlog = await axios.post(`/api/blog/post-blog`, formData, {
+                const formDataToSend = new FormData();
+                formDataToSend.append('blogTitle', formData.blogTitle);
+                formDataToSend.append('blogCategory', formData.blogCategory);
+                formDataToSend.append('blogBody', formData.blogBody);
+                formDataToSend.append('user', JSON.stringify(user));
+                formDataToSend.append('blogImgFile', blogImage);
+
+                const addBlog = await axios.post(`/api/blog/post-blog`, formDataToSend, {
                     headers: {
                         Authorization: user.token,
+                        'Content-Type': 'multipart/form-data',
                     },
                 })
                 if (addBlog.status === 200) {
 
                     const response = addBlog.data.blog;
                     dispatch(addBlogSuccess(response));
+                    toast.success('Blog created successfully!');
+                    // Reset form
+                    setFormData({ user: user });
+                    setBlogImage(null);
+                    setPreviewUrl(null);
                     navigate(`/blog/${response.slug}`);
                 }
             } catch (error) {
                 dispatch(addBlogFailure(error));
-                console.log(error);
+                // Improved error logging for debugging
+                if (error.response && error.response.data && error.response.data.message) {
+                    toast.error(`Failed to create blog: ${error.response.data.message}`);
+                } else {
+                    toast.error('Failed to create blog');
+                }
+                console.log('Error details:', error);
             }
         }
     }
@@ -164,37 +148,27 @@ const CreateBlog = () => {
 
                         <select defaultValue={'Select category'} className={` outline-none py-2 rounded-md px-5 border ${theme === 'dark' && 'bg-gray-700 border border-gray-500'}`} required name='blogCategory' onChange={inputChangeHandle}>
                             <option >Select Category</option>
-                            <option>Java</option>
-                            <option>Javascript</option>
-                            <option>React Js</option>
-                            <option>Git</option>
-                            <option>Mongo DB</option>
+                            <option>Technology & Innovation</option>
+                            <option>Programming & Development</option>
+                            <option>Artificial Intelligence & Machine Learning</option>
+                            <option>Career & Personal Growth</option>
+                            <option>Education & Learning Resources</option>
+                            <option>Data Science & Analytics</option>
+                            <option>Cybersecurity & Privacy</option>
+                            <option>Web Design & UI/UX</option>
+                            <option>Startups & Entrepreneurship</option>
+                            <option>Tech Reviews & Product Insights</option>
                         </select>
 
                     </div>
                     <div className="flex items-center border-2 border-dotted py-2 px-3 border-violet-500 ">
-
-
-
                         <input type="file" accept='image/*' onChange={blogImgChangeHandle} />
-
-                        {
-                            imageLoader ?
-                                <div className="border-4 px-3 py-1 font-bold animate-pulse border-violet-500 rounded-md">
-                                    <FirebaseLoader />
-                                </div>
-                                :
-                                <button disabled={imageLoader} type='button' className={`text-xs py-2 bg-gray-700 border-violet-500 border-2 text-white rounded-md px-4 ${imageLoader ? 'cursor-not-allowed' : 'cursor-pointer'}`} onClick={firebaseUploadImg}>Upload Image</button>
-                        }
-
-
                     </div>
 
                     <div className="w-full flex justify-center">
                         {
-                            firebaseBlogImgUrl ? <img src={firebaseBlogImgUrl && firebaseBlogImgUrl} className=' rounded-md w-full bg-cover h-96 object-cover bg-center' /> : ''
+                            previewUrl ? <img src={previewUrl} className=' rounded-md w-full bg-cover h-96 bg-center' /> : ''
                         }
-
                     </div>
 
                     <div className="my-5">

@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import BACKEND_URL from "../config/apiConfig";
+// const BACKEND_URL = 'http://localhost:8000';
 
 
 
@@ -15,14 +17,14 @@ const RecentBlog = ({ blogs }) => {
 
     return (
         <>
-            <div className={`border w-80 rounded-md  flex justify-center items-center      ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}>
+            <div className={`border w-72 rounded-md  flex justify-center items-center      ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}>
 
                 <Link to={`/blog/${recentBlogs.slug}`}>
-                    <img src={recentBlogs && recentBlogs.blogImgFile} className='hover:scale-[99%] w-80 h-48 object-cover  rounded-sm transition-all' />
+                    <img src={recentBlogs && `${BACKEND_URL}${recentBlogs.blogImgFile}`} className='hover:scale-[99%] w-80 h-48 object-cover  rounded-sm transition-all' />
 
                     <div className="flex flex-col gap-1 px-2 py-2">
                         <p className='md:text-xl '>{recentBlogs && recentBlogs.blogTitle}</p>
-                        <p className={`    ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}  text-xs md:text-sm w-20 text-center border-2 rounded-full
+                        <p className={`    ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}  text-xs md:text-sm w-full text-center border-2 rounded-full px-4 py-1
                     `}>{recentBlogs && recentBlogs.blogCategory}
                         </p>
                     </div>

@@ -247,8 +247,8 @@ const Header = () => {
                                 }}>
 
 
-                                Draft</motion.h1>
-                            <span className='text-xl font-semibold  px-2 text-white rounded-md bg-gradient-to-r from-blue-400 via-blue-600 to-blue-000 hover:from-pink-500 hover:to-yellow-500'>code</span>
+                                Blog</motion.h1>
+                            <span className='text-xl font-semibold  px-2 text-white rounded-md bg-gradient-to-r from-blue-400 via-blue-600 to-blue-000 hover:from-pink-500 hover:to-yellow-500'>App</span>
                         </NavLink>
                     </div>
 
@@ -325,10 +325,7 @@ const Header = () => {
 
                     <div className=" md:hidden flex flex-col justify-center w-full items-center py-10 gap-5">
 
-                        <div className="flex items-center gap-1">
-                            <span><CgUserlane size={20} className={`${location.pathname === '/about' && 'text-blue-600'}`} /></span>
-                            <NavLink to={'/about'} className={`${location.pathname === '/about' && 'border-b-2 border-blue-600 text-blue-600'}`} onClick={() => setToggleNavBtn(!toggleNavBtn)}>About me</NavLink>
-                        </div>
+                        
 
                         {!user &&
 

@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import blogLoader from '../assests/blogSpinner/BlogLoader';
 import NodataImg from '../assests/No data.png';
+import BACKEND_URL from "../config/apiConfig";
+// const BACKEND_URL = 'http://localhost:8000';
 
 
 
@@ -132,11 +134,16 @@ const Search = () => {
 
                                 <option value="" disabled>Select category</option>
                                 <option value="uncategorized">uncategorized</option>
-                                <option value="Java">Java</option>
-                                <option value="Javascript">JavaScript</option>
-                                <option value="React.Js">React Js</option>
-                                <option value="Git">Git</option>
-                                <option value="MongoDB">MongoDB</option>
+                                <option value="Technology & Innovation">Technology & Innovation</option>
+                                <option value="Programming & Development">Programming & Development</option>
+                                <option value="Artificial Intelligence & Machine Learning">Artificial Intelligence & Machine Learning</option>
+                                <option value="Career & Personal Growth">Career & Personal Growth</option>
+                                <option value="Education & Learning Resources">Education & Learning Resources</option>
+                                <option value="Data Science & Analytics">Data Science & Analytics</option>
+                                <option value="Cybersecurity & Privacy">Cybersecurity & Privacy</option>
+                                <option value="Web Design & UI/UX">Web Design & UI/UX</option>
+                                <option value="Startups & Entrepreneurship">Startups & Entrepreneurship</option>
+                                <option value="Tech Reviews & Product Insights">Tech Reviews & Product Insights</option>
                             </select>
                         </div>
 
@@ -164,14 +171,14 @@ const Search = () => {
                                         return (
                                             <div
                                                 key={index}
-                                                className={`shadow-md border hover:scale-[99%] duration-300 transition-all w-96 rounded-tl-xl rounded-br-xl pb-5 cursor-pointer ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}>
+                                                className={`shadow-md border hover:scale-[99%] duration-300 transition-all w-96 h-96 rounded-xl pb-5 cursor-pointer ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}>
 
                                                 <Link to={`/blog/${value?.slug}`}>
-                                                    <img src={value?.blogImgFile} className='duration-300 hover:scale-[99%] transition-all w-96 h-60 rounded-tl-xl rounded-br-xl' />
+                                                    <img src={`${BACKEND_URL}${value?.blogImgFile}`} className='duration-300 hover:scale-[99%] transition-all w-96 h-60 rounded-tl-xl rounded-br-xl' />
 
-                                                    <div className="px-3">
-                                                        <p className='text-lg md:text-xl'>{value?.blogTitle}</p>
-                                                        <span className='text-xs md:text-sm w-20 text-center border px-4 rounded-full'>{value?.blogCategory}</span>
+                                                    <div className="px-5">
+                                                        <p className='text-lg md:text-xl mb-3 mt-3'>{value?.blogTitle}</p>
+                                                        <span className='text-xs md:text-sm w-20 text-center border-2 border-purple-200 px-4 py-1 rounded-full'>{value?.blogCategory}</span>
                                                     </div>
                                                 </Link>
                                             </div>

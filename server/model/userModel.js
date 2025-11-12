@@ -8,11 +8,16 @@ import mongoose from "mongoose";
 const userSchema = mongoose.Schema({
     username: {
         type: String,
-        required: [true, 'Username is required!']
+        required: [true, 'Username is required!'],
+        trim: true,
+        lowercase: true
     },
     email: {
         type: String,
-        required: [true, 'Email is required!']
+        required: [true, 'Email is required!'],
+        unique: true,
+        lowercase: true, 
+        trim: true
     },
     password: {
         type: String,
